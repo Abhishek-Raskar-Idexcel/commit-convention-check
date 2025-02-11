@@ -7,14 +7,15 @@ on:
 jobs:
   commitlint:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Install Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: '16'
 
       - name: Install Dependencies
         run: npm install
@@ -23,11 +24,7 @@ jobs:
         run: |
           git fetch --unshallow || true
           git log --format='%s' origin/${{ github.event.pull_request.head.ref }} ^origin/${{ github.event.pull_request.base.ref }} > commit-messages.txt
-          echo "Commit messages:"
-          cat commit-messages.txt
 
-      - name: Run Commitlint
+      - name: Run Commitlint on Commit Messages
         run: |
-          while IFS= read -r commit; do
-            echo "$commit" | npx commitlint || exit 1
-          done < commit-messages.txt
+          npx commitlint < commit-messages.txt
